@@ -66,7 +66,7 @@ class CubeGame {
     return passedGames
   }
 
-  findMinimums() : GameMin[] {
+  findMinimums() {
     const gameMins = this.games.map((game) => {
       const redMin = Math.max(...game.rounds.map((round) => round.red))
       const greenMin = Math.max(...game.rounds.map((round) => round.green))
