@@ -15,6 +15,11 @@ interface SchematicNumber {
   end: number;
 }
 
+interface Gear {
+  values: number[];
+  row: number;
+  col: number;
+}
 
 
 (function main() {
@@ -36,6 +41,18 @@ interface SchematicNumber {
   })
 
   console.log(`Part 1: ${partnumberSum}`)
+
+  // Part 2
+
+  schematicReader.compileGears()
+
+  let gearRatioSum = 0
+  schematicReader.gears.forEach((gear) => {
+    const gearRatio = gear.values[0] * gear.values[1]
+    gearRatioSum += gearRatio
+  })
+
+  console.log(`Part 2: ${gearRatioSum}`)
 })()
 
 
@@ -43,10 +60,12 @@ interface SchematicNumber {
 class SchematicReader {
   schematic: Schematic
   schematicNumbers: SchematicNumber[]
+  gears: Gear[]
 
   constructor() {
     this.schematic = load()
     this.schematicNumbers = []
+    this.gears = []
   }
 
   get maxWidth() : number {
@@ -90,6 +109,29 @@ class SchematicReader {
     }
   }
 
+  compileGears() {
+    for (let row = 0; row < this.maxHeight; row++) {
+      for (let col = 0; col < this.maxWidth; col++) {
+        const char = this.schematic[row][col]
+
+        if (char === "*") {
+          const gear = {
+            values: this.findAdjacentNumbers({row: row, col: col}),
+            row: row,
+            col: col
+          }
+
+          if (gear.values.length == 2) {
+            this.gears.push(gear)
+          } else {
+            continue
+          }
+
+        }
+      }
+    }
+  }
+
   /**
    * 
    * @param sNum 
@@ -123,6 +165,22 @@ class SchematicReader {
     }
 
     return false
+  }
+
+  findAdjacentNumbers(position = {row: number, col: number}) : number[] {
+    const adjs = this.schematicNumbers.filter((sNum) => {
+      const rowAdjacency = Math.abs(sNum.row - position.row) <= 1 ? true : false
+
+      const left = sNum.start - 1
+      const right = sNum.end
+      const colAdjacency = left <= position.col && position.col <= right ? true : false
+
+      return rowAdjacency && colAdjacency
+    })
+
+    const adjValues = adjs.map((adj) => adj.value)
+
+    return adjValues
   }
 }
 
