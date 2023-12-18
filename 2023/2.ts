@@ -29,6 +29,17 @@ interface GameRound {
   })
 
   console.log(`Part 1: ${passedGameIdSum}`)
+
+  const mins = cubeGame.findMinimums()
+
+  const gamePowers = mins.map((game) => {
+    const power = game.min.red * game.min.green * game.min.blue
+    return power
+  })
+
+  const totalPower = gamePowers.reduce((a, b) => a + b, 0)
+
+  console.log(`Part 1: ${totalPower}`)
 })()
 
 
@@ -53,6 +64,24 @@ class CubeGame {
     })
 
     return passedGames
+  }
+
+  findMinimums() : GameMin[] {
+    const gameMins = this.games.map((game) => {
+      const redMin = Math.max(...game.rounds.map((round) => round.red))
+      const greenMin = Math.max(...game.rounds.map((round) => round.green))
+      const blueMin = Math.max(...game.rounds.map((round) => round.blue))
+
+      return {
+        id: game.id,
+        min: { red: redMin, green: greenMin, blue: blueMin }
+      }
+    }) as {
+      id: number,
+      min: { red: number, green: number, blue: number }
+    }[]
+
+    return gameMins
   }
 }
 
